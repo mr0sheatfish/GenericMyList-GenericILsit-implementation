@@ -1,1 +1,1 @@
-MyList<T> : IList<T> (generic) interface implementation
+MyList(generic) : IList(generic) interface implementation
