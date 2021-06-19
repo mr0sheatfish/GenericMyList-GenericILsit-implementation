@@ -9,30 +9,30 @@ namespace MyList
     {
         public static void Main()
         {
-            int[] arr = new int[7];
+            //int[] arr = new int[7];
             //int[] arrTest = new int[6];
-            for (int i = 0; i < arr.Length; i++)
-            {
-                arr[i] = i + 1;
-            }
+            //for (int i = 0; i < arr.Length; i++)
+            //{
+            //    arr[i] = i + 1;
+            //}
             //MyList<int> intList0 = new MyList<int>();
             //MyList<int> intList1 = new MyList<int>(3);
-            MyList<int> intList2 = new MyList<int>(arr);
-            Console.WriteLine(intList2.Count);
-            intList2.Count = 5;
-            intList2.Remove(-3);
+            //MyList<int> intList2 = new MyList<int>(arr);
+            //Console.WriteLine(intList2.Count);
+            //intList2.Count = 5;
+            //intList2.Remove(-3);
             //intList0.Count = 6;
-            for (int i = 0; i < intList2.Count; i++)
-            {
-                Console.Write(intList2[i] + " | ");
-            }
-            Console.WriteLine();
-            Console.Write(intList2.Count);
-            Console.Write(intList2.IndexOf(6));
+            //for (int i = 0; i < intList2.Count; i++)
+            //{
+            //    Console.Write(intList2[i] + " | ");
+            //}
+            //Console.WriteLine();
+            //Console.Write(intList2.Count);
+            //Console.Write(intList2.IndexOf(6));
             //Console.WriteLine(intList2.IndexOf(1));
             //Console.WriteLine();
             //Console.WriteLine(intList2.Count);
-            Console.ReadKey();
+            //Console.ReadKey();
             //intList2.RemoveAt(7);
             //foreach (int it in intList1)
             //{
