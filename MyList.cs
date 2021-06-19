@@ -9,26 +9,30 @@ namespace MyList
     {
         public static void Main()
         {
-            //int[] arr = new int[10];
+            int[] arr = new int[7];
             //int[] arrTest = new int[6];
-            //for (int i = 0; i < arr.Length; i++)
-            //{
-            //    arr[i] = i + 1;
-            //}
+            for (int i = 0; i < arr.Length; i++)
+            {
+                arr[i] = i + 1;
+            }
             //MyList<int> intList0 = new MyList<int>();
             //MyList<int> intList1 = new MyList<int>(3);
-            //MyList<int> intList2 = new MyList<int>(arr);
-            //intList0.Count = 12;
+            MyList<int> intList2 = new MyList<int>(arr);
+            Console.WriteLine(intList2.Count);
+            intList2.Count = 5;
+            intList2.Remove(-3);
             //intList0.Count = 6;
-            //intList2.CopyTo(arrTest, 0);
-            //for (int i = 0; i < intList1.Count; i++)
-            //{
-            //    Console.Write(intList1[i] + " | ");
-            //}
+            for (int i = 0; i < intList2.Count; i++)
+            {
+                Console.Write(intList2[i] + " | ");
+            }
+            Console.WriteLine();
+            Console.Write(intList2.Count);
+            Console.Write(intList2.IndexOf(6));
             //Console.WriteLine(intList2.IndexOf(1));
             //Console.WriteLine();
             //Console.WriteLine(intList2.Count);
-            //Console.ReadKey();
+            Console.ReadKey();
             //intList2.RemoveAt(7);
             //foreach (int it in intList1)
             //{
@@ -73,25 +77,26 @@ namespace MyList
         }
         public int Count
         {
-            get => _items.Length;
+            get => _capacity;
             set
             {
-                if (value > _capacity)
+                try
                 {
-                    try
+                    if (value > _capacity)
+                    {
+                        Array.Resize(ref _items, value);
+                        _capacity = value;
+                    }
+                    else
                     {
                         Array.Resize(ref _items, value);
                         _count = value - 1;
                         _capacity = value;
                     }
-                    catch (ArgumentException exc)
-                    {
-                        Console.WriteLine(exc.Message);
-                    }
                 }
-                else
+                catch (ArgumentException exc)
                 {
-                    _count = value;
+                    Console.WriteLine(exc.Message);
                 }
             }
         }
@@ -101,23 +106,50 @@ namespace MyList
         }
         public T this[int i]
         {
-            get => _items[i];
-            set => _items[i] = value;
+            get
+            {
+                if (i < Count)
+                    return _items[i];
+                else
+                {
+                    ArgumentOutOfRangeException exc = new ArgumentOutOfRangeException();
+                    Console.WriteLine(exc.Message);
+                    throw exc;
+                }
+            }
+            set
+            {
+                try
+                {
+                    _items[i] = value;
+                }
+                catch (ArgumentOutOfRangeException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+                catch (NotSupportedException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
         }
         public void Add(T item)
         {
             try
             {
-                if (_count < _items.Length - 1)
+                if (_count < Count - 1)
                 {
-                    _items[_count] = item;
                     _count++;
-                    return;
+                    _items[_count] = item;
                 }
-                _capacity++;
-                _count++;
-                Array.Resize(ref _items, _capacity);
-                _items[_count] = item;
+                else
+                {
+                    _capacity++;
+                    _count++;
+                    Array.Resize(ref _items, _capacity);
+                    _items[_count] = item;
+                }
+                return;
             }
             catch (NotSupportedException exc)
             {
@@ -126,13 +158,14 @@ namespace MyList
         }
         public void Clear()
         {
-            _count = 0;
+            _items = Array.Empty<T>();
+            Array.Resize(ref _items, _capacity);
         }
         public bool Contains(T item)
         {
             for (int i = 0; i < Count; i++)
             {
-                if (Equals(_items[i], item))
+                if (IndexOf(item) != -1)
                 {
                     return true;
                 }
@@ -143,7 +176,7 @@ namespace MyList
         {
             for (int i = 0; i < Count; i++)
             {
-                if (Equals(_items[i], item))
+                if (_items[i].GetHashCode() == item.GetHashCode())
                 {
                     return i;
                 }
@@ -152,20 +185,12 @@ namespace MyList
         }
         public void Insert(int index, T item)
         {
-            if (index >= 0)
+            if (index >= 0 & index < Count)
             {
                 try
                 {
-                    if (index > _count & index < _capacity)
+                    if (index > _count & index < Count)
                     {
-                        _items[index] = item;
-                    }
-                    else if (index < _count)
-                    {
-                        for (int i = _count - 2; i >= index; i--)
-                        {
-                            _items[i + 1] = _items[i];
-                        }
                         _items[index] = item;
                     }
                     else
@@ -178,19 +203,18 @@ namespace MyList
                         }
                         _items[index] = item;
                     }
-                }
-                catch (IndexOutOfRangeException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-                catch (ArgumentOutOfRangeException exc)
-                {
-                    Console.WriteLine(exc.Message);
+                    return;
                 }
                 catch (NotSupportedException exc)
                 {
                     Console.WriteLine(exc.Message);
                 }
+            }
+            else
+            {
+                ArgumentOutOfRangeException exc = new ArgumentOutOfRangeException();
+                Console.WriteLine(exc.Message);
+                throw exc;
             }
         }
         public bool Remove(T item)
@@ -200,6 +224,8 @@ namespace MyList
                 if ((IndexOf(item) != -1))
                 {
                     RemoveAt(IndexOf(item));
+                    _capacity--;
+                    Array.Resize(ref _items, _capacity);
                     return true;
                 }
             }
@@ -213,18 +239,22 @@ namespace MyList
         {
             try
             {
-                if ((index >= 0) && (index < Count))
+                if (index >= 0 & index < Count)
                 {
                     for (int i = index; i < Count - 1; i++)
                     {
                         _items[i] = _items[i + 1];
                     }
-                    _count--;
+                    _capacity--;
+                    Array.Resize(ref _items, _capacity);
+                    return;
                 }
-            }
-            catch (ArgumentOutOfRangeException exc)
-            {
-                Console.WriteLine(exc.Message);
+                else
+                {
+                    ArgumentOutOfRangeException exc = new ArgumentOutOfRangeException();
+                    Console.WriteLine(exc.Message);
+                    throw exc;
+                }
             }
             catch (NotSupportedException exc)
             {
@@ -243,7 +273,6 @@ namespace MyList
                         {
                             array.SetValue(_items[i], arrayIndex++);
                         }
-                        return;
                     }
                     else
                     {
@@ -251,10 +280,12 @@ namespace MyList
                         {
                             array.SetValue(_items[i], arrayIndex++);
                         }
-                        return;
                     }
+                    return;
                 }
-                throw new ArgumentOutOfRangeException();
+                ArgumentOutOfRangeException exc = new ArgumentOutOfRangeException();
+                Console.WriteLine(exc.Message);
+                throw exc;
             }
             catch (ArgumentNullException exc)
             {
